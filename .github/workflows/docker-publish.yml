@@ -111,16 +111,17 @@ jobs:
             username: ubuntu
             key: ${{ secrets.EC2_PEM }}
             script: |
-              docker stop container_bdaccounts || true
-              docker rm container_bdaccounts || true
+              docker stop container_search_account || true
+              docker rm container_search_account || true
               docker rmi ${{ secrets.DOCKER_REPO }}:qa || true
 
               docker pull ${{ secrets.DOCKER_REPO }}:qa
 
               docker run -d \
                 --restart always \
-                --name container_bdaccounts \
+                --name container_search_account \
                 -p 8081:8081 \
-                -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSROOT }} \
-                -e MYSQL_DATABASE=${{ secrets.MYSQL_DB }} \
+                -e "DB_URL=jdbc:${{ secrets.DB_URL }}" \
+                -e "DB_USERNAME=${{ secrets.DB_USERNAME }}" \
+                -e "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" \
                 ${{ secrets.DOCKER_REPO }}:qa
